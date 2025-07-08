@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: login-page-config
+data:
+  # Full MongoDB Connection string using the secret password.
+  MONGO_URI: "mongodb://root:$(MONGO_ROOT_PASSWORD)@mongodb-service:27017/loginpagedb"
+  USER_SERVICE_URL: "http://user-service:5001"
+  COURSE_SERVICE_URL: "http://course-service:5002"
+  NOTIFICATION_SERVICE_URL: "http://notification-service:5003"

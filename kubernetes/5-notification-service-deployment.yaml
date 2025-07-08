@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: notification-service }
+  template:
+    metadata:
+      labels: { app: notification-service }
+    spec:
+      containers:
+      - name: notification-service
+        image: sriniv7654/busybox2:login-page-notification-service
+        ports:
+        - containerPort: 5003
+        env:
+        - name: SENDER_EMAIL
+          valueFrom:
+            secretKeyRef: { name: login-page-secrets, key: SENDER_EMAIL }
+        - name: SENDER_PASSWORD
+          valueFrom:
+            secretKeyRef: { name: login-page-secrets, key: SENDER_PASSWORD }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+spec:
+  selector: { app: notification-service }
+  ports:
+  - port: 5003
+    targetPort: 5003

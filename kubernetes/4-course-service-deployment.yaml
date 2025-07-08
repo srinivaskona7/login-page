@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: course-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: course-service }
+  template:
+    metadata:
+      labels: { app: course-service }
+    spec:
+      containers:
+      - name: course-service
+        image: sriniv7654/busybox2:login-page-course-service
+        ports:
+        - containerPort: 5002
+        env:
+        - name: MONGO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef: { name: login-page-secrets, key: MONGO_ROOT_PASSWORD }
+        - name: MONGO_URI
+          valueFrom:
+            configMapKeyRef: { name: login-page-config, key: MONGO_URI }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: course-service
+spec:
+  selector: { app: course-service }
+  ports:
+  - port: 5002
+    targetPort: 5002

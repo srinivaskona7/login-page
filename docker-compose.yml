@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_USER_API_URL=${REACT_APP_USER_API_URL}
+      - REACT_APP_COURSE_API_URL=${REACT_APP_COURSE_API_URL}
+    depends_on:
+      - user-service
+      - course-service
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "5001:5001"
+    environment:
+      - MONGO_URI=${MONGO_URI}${MONGO_DB_NAME}
+      - NOTIFICATION_SERVICE_URL=${NOTIFICATION_SERVICE_URL}
+    depends_on:
+      - mongo
+      - notification-service
+
+  course-service:
+    build: ./course-service
+    ports:
+      - "5002:5002"
+    environment:
+      - MONGO_URI=${MONGO_URI}${MONGO_DB_NAME}
+    depends_on:
+      - mongo
+
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "5003:5003"
+    environment:
+      - SENDER_EMAIL=${SENDER_EMAIL}
+      - SENDER_PASSWORD=${SENDER_PASSWORD}
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=mongodb-password
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

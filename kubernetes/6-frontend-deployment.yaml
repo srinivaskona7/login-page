@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: frontend }
+  template:
+    metadata:
+      labels: { app: frontend }
+    spec:
+      containers:
+      - name: frontend
+        image: sriniv7654/busybox2:login-page-frontend
+        ports:
+        - containerPort: 80
+        env:
+        - name: REACT_APP_USER_API_URL
+          valueFrom:
+            configMapKeyRef: { name: login-page-config, key: USER_SERVICE_URL }
+        - name: REACT_APP_COURSE_API_URL
+          valueFrom:
+            configMapKeyRef: { name: login-page-config, key: COURSE_SERVICE_URL }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  type: LoadBalancer
+  selector: { app: frontend }
+  ports:
+  - port: 80
+    targetPort: 80
