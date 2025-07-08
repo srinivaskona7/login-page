@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-d
 import Register from './components/Register';
 import Login from './components/Login';
 import Welcome from './components/Welcome';
+import ErrorBoundary from './components/ErrorBoundary'; // Import the ErrorBoundary
 import './App.css';
 
 function App() {
@@ -13,12 +14,14 @@ function App() {
           <h1>Login Page Application</h1>
         </header>
         <main>
-          <Switch>
-            <Route path="/login" component={Login} />
-            <Route path="/register" component={Register} />
-            <Route path="/welcome" component={Welcome} />
-            <Redirect from="/" to="/login" />
-          </Switch>
+          <ErrorBoundary> {/* Wrap your components */}
+            <Switch>
+              <Route path="/login" component={Login} />
+              <Route path="/register" component={Register} />
+              <Route path="/welcome" component={Welcome} />
+              <Redirect from="/" to="/login" />
+            </Switch>
+          </ErrorBoundary>
         </main>
       </div>
     </Router>
