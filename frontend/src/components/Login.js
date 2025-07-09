@@ -1,37 +1,62 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory, Link } from 'react-router-dom';
+import axios from 'axios';
 
-// This is temporary code to find the connection error.
+const USER_API_URL = process.env.REACT_APP_USER_API_URL || 'http://localhost:5001';
+const COURSE_API_URL = process.env.REACT_APP_COURSE_API_URL || 'http://localhost:5002';
+
 function Login() {
-  const [testMessage, setTestMessage] = useState('Attempting to connect to the backend at http://localhost:5002/courses ...');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [books, setBooks] = useState([]);
+  const [message, setMessage] = useState('');
+  const history = useHistory();
 
   useEffect(() => {
-    fetch('http://localhost:5002/courses')
-      .then(response => {
-        if (!response.ok) {
-          // This will catch HTTP errors like 404 or 500
-          throw new Error(`Network response was not ok. Status: ${response.status} ${response.statusText}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        setTestMessage('✅ SUCCESS: Successfully connected to the backend and received data!');
-      })
-      .catch(error => {
-        // This will catch network failures (like CORS) or other errors
-        console.error('THIS IS THE REAL ERROR:', error);
-        setTestMessage(`❌ FAILED: Could not connect to backend. The final error is: ${error.message}`);
+    const fetchBooks = async () => {
+      try {
+        const response = await axios.get(`${COURSE_API_URL}/courses`);
+        setBooks(response.data);
+      } catch (error) {
+        console.error("Could not fetch books", error);
+      }
+    };
+    fetchBooks();
+  }, []);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setMessage('Logging in...');
+    try {
+      const response = await axios.post(`${USER_API_URL}/login`, { email, password });
+      history.push({
+        pathname: '/welcome',
+        state: { user: response.data }
       });
-  }, []); // The empty array ensures this runs only once.
+    } catch (error) {
+      setMessage(error.response?.data?.error || 'Login failed.');
+    }
+  };
 
   return (
-    <div style={{ padding: '20px', fontSize: '1.2rem', textAlign: 'left', lineHeight: '1.6' }}>
-      <h2>Backend Connection Test</h2>
-      <p style={{ color: testMessage.startsWith('❌') ? 'red' : 'green', fontWeight: 'bold' }}>
-        {testMessage}
-      </p>
-      <p>This message will tell us if the frontend can communicate with the backend services.</p>
+    <div>
+      <div className="form-container">
+        <h2>Login</h2>
+        <form onSubmit={handleLogin}>
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <button type="submit">Login</button>
+        </form>
+        {message && <p className="message">{message}</p>}
+        <p>Don't have an account? <Link to="/register">Register here</Link></p>
+      </div>
+      <div className="book-display">
+        <h3>Featured Books</h3>
+        {books.map(book => (
+          <img key={book._id} src={book.imageUrl} alt={book.title} className="book-image" />
+        ))}
+      </div>
     </div>
   );
 }
-
 export default Login;

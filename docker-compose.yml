@@ -18,7 +18,7 @@ services:
     ports:
       - "5001:5001"
     environment:
-      - MONGO_URI=${MONGO_URI}${MONGO_DB_NAME}
+      - MONGO_URI=${MONGO_URI}
       - NOTIFICATION_SERVICE_URL=${NOTIFICATION_SERVICE_URL}
     depends_on:
       - mongo
@@ -29,7 +29,7 @@ services:
     ports:
       - "5002:5002"
     environment:
-      - MONGO_URI=${MONGO_URI}${MONGO_DB_NAME}
+      - MONGO_URI=${MONGO_URI}
     depends_on:
       - mongo
 
