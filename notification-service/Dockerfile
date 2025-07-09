@@ -10,7 +10,11 @@ WORKDIR /usr/src/app
 COPY --from=builder /root/.local /root/.local
 COPY . .
 
-# Ensure the PATH includes the installed packages
+# Make sure installed python user packages are on the PATH
 ENV PATH=/root/.local/bin:$PATH
 
-CMD ["python", "./notification_service.py"] # For notification-service, this would be notification_service.py
+# For user-service and course-service
+#CMD ["python", "./app.py"]
+
+# For notification-service use:
+CMD ["python", "./notification_service.py"]
