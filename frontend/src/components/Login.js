@@ -57,6 +57,7 @@ function Login() {
           </button>
         </form>
         {message && <p className="message">{message}</p>}
+        }
         <p>Don't have an account? <Link to="/register">Register here</Link></p>
       </div>
       {books.length > 0 && (

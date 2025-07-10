@@ -75,6 +75,7 @@ function Register() {
         </form>
       )}
       {message && <p className="message">{message}</p>}
+      }
     </div>
   );
 }
