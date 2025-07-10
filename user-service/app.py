@@ -3,11 +3,17 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
 from datetime import datetime, timedelta
+import urllib.parse
 
 app = Flask(__name__)
 CORS(app)
 
 MONGO_URI = os.environ.get('MONGO_URI')
+# Handle environment variable substitution for MONGO_URI
+if MONGO_URI and '$(MONGO_ROOT_PASSWORD)' in MONGO_URI:
+    mongo_password = os.environ.get('MONGO_ROOT_PASSWORD', 'mongodb-password')
+    MONGO_URI = MONGO_URI.replace('$(MONGO_ROOT_PASSWORD)', urllib.parse.quote_plus(mongo_password))
+
 NOTIFICATION_URL = os.environ.get('NOTIFICATION_SERVICE_URL')
 
 client = MongoClient(MONGO_URI)
@@ -28,9 +34,12 @@ def register():
     }
 
     try:
-        requests.post(f"{NOTIFICATION_URL}/send-otp", json={"email": email, "otp": otp})
+        response = requests.post(f"{NOTIFICATION_URL}/send-otp", json={"email": email, "otp": otp}, timeout=10)
+        if response.status_code != 200:
+            return jsonify({"error": "Failed to send OTP"}), 500
         return jsonify({"message": "OTP sent successfully"}), 200
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException as e:
+        print(f"Notification service error: {e}")
         return jsonify({"error": "Failed to contact notification service"}), 500
 
 @app.route("/verify-otp", methods=["POST"])

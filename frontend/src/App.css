@@ -3,8 +3,13 @@ body { font-family: sans-serif; background-color: #f4f7f6; }
 .App-header { background-color: #005f73; padding: 20px; color: white; margin-bottom: 2rem; }
 .form-container { background: white; max-width: 400px; margin: auto; padding: 2rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; }
 input { display: block; width: 95%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
-button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; font-size: 1rem; }
+button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; font-size: 1rem; transition: background-color 0.3s; }
 button:hover { background-color: #0056b3; }
+button:disabled { background-color: #6c757d; cursor: not-allowed; }
 .message { color: #d9534f; margin-top: 1rem; }
 .book-display { margin-top: 2rem; }
-.book-image { width: 150px; height: auto; margin: 10px; border: 3px solid #ddd; border-radius: 4px; }
+.books-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 1rem; }
+.book-item { text-align: center; max-width: 150px; }
+.book-image { width: 150px; height: 200px; object-fit: cover; border: 3px solid #ddd; border-radius: 4px; transition: transform 0.3s; }
+.book-image:hover { transform: scale(1.05); }
+.book-title { margin-top: 8px; font-size: 0.9rem; color: #333; font-weight: 500; }
